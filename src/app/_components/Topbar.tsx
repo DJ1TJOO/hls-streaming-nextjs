@@ -12,7 +12,7 @@ export default function Topbar() {
                 <SearchBar />
             </div>
             <div className="rounded-2xl bg-secondairy p-2.5 text-text">
-                <BellIcon className="h-6 w-6" />
+                <BellIcon className="h-5 w-5" />
             </div>
         </header>
     );

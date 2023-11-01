@@ -11,7 +11,7 @@ export default function NavSection({
 }) {
     return (
         <div className="flex flex-col">
-            <span className="mb-2 text-sm font-bold text-text">{label}</span>
+            <span className="mb-1 text-xs font-bold text-text">{label}</span>
             {buttons.map((button) => (
                 <NavButton key={button.label} path={button.url}>
                     {button.icon} {button.label}
