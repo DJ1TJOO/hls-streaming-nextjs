@@ -13,18 +13,21 @@ export default function User({
 }) {
     return (
         <UserMenu>
-            <div className="flex w-full items-center gap-3 rounded-2xl bg-secondairy p-4 text-text">
-                <div className="rounded-full bg-text p-1">
-                    <UserIcon className="h-6 w-6 text-primary" />
+            <div className="flex w-full items-center justify-between gap-3 rounded-2xl bg-secondairy p-4 text-text">
+                <div className="flex items-center gap-3">
+                    <div className="rounded-full bg-text p-1">
+                        <UserIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium leading-none">
+                            {username}
+                        </span>
+                        <span className="flex-1 truncate text-xs text-text-dark">
+                            {email}
+                        </span>
+                    </div>
                 </div>
-                <div className="flex flex-col items-start">
-                    <span className="text-sm font-medium leading-none">
-                        {username}
-                    </span>
-                    <span className="flex-1 truncate text-xs text-text-dark">
-                        {email}
-                    </span>
-                </div>
+                <ChevronDownIcon className="h-6 w-6" />
             </div>
         </UserMenu>
     );

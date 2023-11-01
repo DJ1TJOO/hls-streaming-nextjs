@@ -14,7 +14,7 @@ import User from "./User";
 
 export default function Sidebar() {
     return (
-        <nav className="flex h-full w-48 shrink-0 flex-col gap-4 overflow-y-auto">
+        <nav className="flex h-full w-56 shrink-0 flex-col gap-4 overflow-y-auto">
             <header className="flex h-14 items-center gap-3 text-text">
                 <TicketIcon className="h-14 w-14" />
                 <span className="text-xl font-medium">STREAMER</span>

@@ -17,7 +17,7 @@ export default function NavButton({
         <Link
             href={path}
             className={clsx(
-                "flex w-full gap-3 rounded-2xl p-3 text-sm text-text",
+                "flex w-full gap-3 rounded-2xl px-3 py-3.5 text-sm text-text",
                 path === currentPath && "bg-action"
             )}
         >
