@@ -1,18 +1,9 @@
-import {
-    AdjustmentsHorizontalIcon,
-    ArrowRightOnRectangleIcon,
-    Bars3Icon,
-    DocumentArrowUpIcon,
-    GlobeAltIcon,
-    TicketIcon,
-} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { headers } from "next/headers";
 
-import NavSection from "./_components/NavSection";
-import User from "./_components/User";
+import Topbar from "./_components/Topbar";
+import Sidebar from "./_components/navigation/Sidebar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,57 +26,13 @@ export default function RootLayout({
                     "flex h-screen gap-4 bg-primary p-8"
                 )}
             >
-                <nav className="flex h-full w-60 shrink-0 flex-col gap-4 overflow-y-auto">
-                    <header className="flex h-14 items-center gap-3 text-text">
-                        <TicketIcon className="h-14 w-14" />
-                        <span className="text-2xl font-medium">STREAMER</span>
-                    </header>
-                    <User username={"Thomas"} email={"t.ferb1@gmail.com"} />
-                    <div className="flex flex-col gap-8">
-                        <NavSection
-                            label={"Menu"}
-                            buttons={[
-                                {
-                                    icon: <GlobeAltIcon className="h-6 w-6" />,
-                                    label: "Discover",
-                                    url: "/",
-                                },
-                                {
-                                    icon: <Bars3Icon className="h-6 w-6" />,
-                                    label: "My List",
-                                    url: "/list",
-                                },
-                                {
-                                    icon: (
-                                        <DocumentArrowUpIcon className="h-6 w-6" />
-                                    ),
-                                    label: "Upload",
-                                    url: "/upload",
-                                },
-                            ]}
-                        />
-                        <NavSection
-                            label={"General"}
-                            buttons={[
-                                {
-                                    icon: (
-                                        <AdjustmentsHorizontalIcon className="h-6 w-6" />
-                                    ),
-                                    label: "Settings",
-                                    url: "/settings",
-                                },
-                                {
-                                    icon: (
-                                        <ArrowRightOnRectangleIcon className="h-6 w-6" />
-                                    ),
-                                    label: "Logout",
-                                    url: "/logout",
-                                },
-                            ]}
-                        />
+                <Sidebar />
+                <main className="flex h-full w-full flex-col gap-4">
+                    <Topbar />
+                    <div className="scrollbar-none overflow-y-auto">
+                        {children}
                     </div>
-                </nav>
-                <main className="h-full w-full">{children}</main>
+                </main>
             </body>
         </html>
     );
