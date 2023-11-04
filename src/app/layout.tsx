@@ -27,9 +27,10 @@ export default function RootLayout({
                 )}
             >
                 <Sidebar />
-                <main className="flex h-full w-full flex-col gap-4">
+                <main className="relative flex h-full w-full flex-col gap-4">
                     <Topbar />
-                    <div className="scrollbar-none overflow-y-auto">
+                    <div className="absolute top-14 z-10 h-4 min-h-[1rem] w-full bg-gradient-to-b from-primary"></div>
+                    <div className="scrollbar-none -mt-4 flex flex-col gap-6 overflow-y-auto pb-6 pr-6 pt-4 filter">
                         {children}
                     </div>
                 </main>
