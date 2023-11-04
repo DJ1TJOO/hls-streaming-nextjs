@@ -23,7 +23,7 @@ export default function RootLayout({
             <body
                 className={clsx(
                     inter.className,
-                    "flex h-screen gap-4 bg-primary p-8"
+                    "flex h-screen gap-4 overflow-visible bg-primary pl-6 pt-6"
                 )}
             >
                 <Sidebar />
