@@ -9,10 +9,15 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@headlessui/react": "^1.7.17",
+		"@heroicons/react": "^2.0.18",
+		"clsx": "^2.0.0",
+		"dotenv": "^16.3.1",
 		"express": "^4.18.2",
 		"fluent-ffmpeg": "^2.1.2",
 		"hls-server": "^1.5.0",
 		"hls.js": "^1.4.12",
+		"moviedb-promise": "^4.0.3",
 		"next": "14.0.1",
 		"react": "^18",
 		"react-dom": "^18"
