@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+    webpack: (config, context) => {
+        config.plugins.push(
+            new context.webpack.DefinePlugin({
+                "process.env.FLUENTFFMPEG_COV": false,
+            })
+        );
 
-module.exports = nextConfig
+        return config;
+    },
+};
+
+module.exports = nextConfig;
