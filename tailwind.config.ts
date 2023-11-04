@@ -20,6 +20,17 @@ const config: Config = {
                 action: "#F37615",
                 text: "#FCFCFD",
                 "text-dark": "#C7C7C7",
+                error: "#f31515",
+            },
+            animation: {
+                "pulse-once": "pulse-once 0.500s ease-in-out forwards",
+            },
+            keyframes: {
+                "pulse-once": {
+                    "0%": { backgroundColor: "var(--tw-gradient-from)" },
+                    "50%": { backgroundColor: "var(--tw-gradient-to)" },
+                    "100%": { backgroundColor: "var(--tw-gradient-from)" },
+                },
             },
         },
     },
