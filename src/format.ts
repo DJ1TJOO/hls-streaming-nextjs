@@ -11,3 +11,9 @@ export function formatEnumeration(items: string[]) {
     if (items.length === 1) return items[0];
     return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
+
+export function formatYear(date: string) {
+    return new Date(date).toLocaleString(undefined, {
+        year: "numeric",
+    });
+}

@@ -1,8 +1,19 @@
 "use client";
 
-import React, { useCallback, useContext, useRef } from "react";
+import React, {
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
+
+import { formatYear } from "@/format";
+import { search } from "@/tmdb/search";
 
 import { FileUploadFile, FilesContext } from "../FilesProvider";
+import VideoDescription from "./VideoDescription";
+import { VideoContext } from "./VideoProvider";
 import VideoUploadControls from "./VideoUploadControls";
 import VideoUploadForm from "./VideoUploadForm";
 import VideoUploadPreview from "./VideoUploadPreview";
@@ -10,6 +21,22 @@ import VideoUploadProgressBar from "./VideoUploadProgressBar";
 
 export default function VideoUpload({ file }: { file: FileUploadFile }) {
     const { setFiles } = useContext(FilesContext);
+
+    const [searchResults, setSearchResults] =
+        useState<Awaited<ReturnType<typeof search>>>(null);
+    const [currentResult, setCurrentResult] = useState<
+        NonNullable<Awaited<ReturnType<typeof search>>>["best"] | null
+    >(null);
+
+    useEffect(() => {
+        search(file.name).then((x) => {
+            console.log(x);
+            setSearchResults(x);
+            if (x && !currentResult) {
+                setCurrentResult(x.best);
+            }
+        });
+    }, [file.name]);
 
     const form = useRef<HTMLFormElement | null>(null);
     const updateFile = useCallback(
@@ -40,51 +67,29 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
     );
 
     return (
-        <VideoUploadForm file={file} form={form} updateFile={updateFile}>
-            <section className="flex w-full flex-col gap-3">
-                <div className="flex w-full gap-3">
-                    <VideoUploadPreview file={file} />
-                    <div className="flex flex-col gap-3">
-                        <VideoUploadControls
-                            file={file}
-                            form={form}
-                            updateFile={updateFile}
-                        />
-                        <div className="flex gap-3">
-                            <div className="flex w-full flex-col gap-1">
-                                <h1 className="text-xl font-medium text-text">
-                                    Meg 2: The Trench{" "}
-                                    <span className="text-text-dark">
-                                        (2023)
-                                    </span>
-                                </h1>
-                                <p className="text-sm text-text-dark">
-                                    An exploratory dive into the deepest depths
-                                    of the ocean of a daring research team
-                                    spirals into chaos when a malevolent mining
-                                    operation threatens their mission and forces
-                                    them into a high-stakes battle for survival.
-                                </p>
-                            </div>
-                            <div className="flex w-full flex-col gap-1">
-                                <h1 className="text-xl font-medium text-text">
-                                    Pilot{" "}
-                                    <span className="text-text-dark">
-                                        • 1h21m
-                                    </span>
-                                </h1>
-                                <p className="text-sm text-text-dark">
-                                    A "closer" for one of New York City's most
-                                    successful law firms decides to hire an
-                                    aloof genius who has passed the bar but
-                                    never went to law school as his associate.
-                                </p>
-                            </div>
+        <VideoContext.Provider
+            value={{
+                file,
+                updateFile,
+                currentResult,
+                setCurrentResult,
+                searchResults,
+                setSearchResults,
+                form,
+            }}
+        >
+            <VideoUploadForm>
+                <section className="flex w-full flex-col gap-3">
+                    <div className="flex w-full gap-3">
+                        <VideoUploadPreview />
+                        <div className="flex w-full flex-col gap-3">
+                            <VideoUploadControls />
+                            <VideoDescription />
                         </div>
                     </div>
-                </div>
-                <VideoUploadProgressBar file={file} />
-            </section>
-        </VideoUploadForm>
+                    <VideoUploadProgressBar />
+                </section>
+            </VideoUploadForm>
+        </VideoContext.Provider>
     );
 }

@@ -1,25 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 
 import { formatTime } from "@/format";
 
-import { FileUploadFile } from "../FilesProvider";
+import { VideoContext } from "./VideoProvider";
 
-export default function VideoUploadPreview({ file }: { file: FileUploadFile }) {
+export default function VideoUploadPreview() {
+    const { file } = useContext(VideoContext);
+
     return (
         <div className="h-fit w-[14rem] min-w-[14rem] max-w-[14rem] overflow-hidden rounded-2xl bg-tertiary">
             <video
-                src={file.preview}
-                onLoad={(e) => {
-                    URL.revokeObjectURL(file.preview);
+                src={file?.preview}
+                onLoadedMetadata={(e) => {
+                    const video = e.target as HTMLVideoElement;
+                    video.currentTime = Math.min(video.duration, 60 * 3);
+                }}
+                onTimeUpdate={() => {
+                    file && URL.revokeObjectURL(file.preview);
                 }}
                 className="w-full"
             />
-            <div className="p-3 text-sm font-bold text-text">
-                {file.name}{" "}
+            <div className="break-words p-3 text-sm font-bold text-text">
+                {file?.name}{" "}
                 <span className="text-text-dark">
-                    • {formatTime(file.duration)}
+                    • {formatTime(file?.duration ?? 0)}
                 </span>
             </div>
         </div>

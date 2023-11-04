@@ -1,32 +1,22 @@
 "use client";
 
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useContext } from "react";
 
-import { FileUploadFile } from "../FilesProvider";
+import { VideoContext } from "./VideoProvider";
 
 function isNumeric(str: string) {
     return !isNaN(parseFloat(str));
 }
 
-export default function VideoUploadForm({
-    children,
-    file,
-    form,
-    updateFile,
-}: PropsWithChildren<{
-    file: FileUploadFile;
-    form: React.MutableRefObject<HTMLFormElement | null>;
-    updateFile: (
-        updated: {
-            upload?: number;
-            uploadingResponse?: ReadableStreamDefaultReader<string> | null;
-        } | null
-    ) => void;
-}>) {
+export default function VideoUploadForm({ children }: PropsWithChildren) {
+    const { form, file, updateFile } = useContext(VideoContext);
+
     return (
         <form
             ref={form}
             action={async () => {
+                if (!file) return;
+
                 const formData = new FormData();
                 formData.append("file", file);
 

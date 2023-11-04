@@ -1,30 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 
 import {
     DocumentArrowUpIcon,
     DocumentMinusIcon,
 } from "@heroicons/react/24/outline";
 
-import { FileUploadFile } from "../FilesProvider";
+import { VideoContext } from "./VideoProvider";
 
-export default function VideoUploadControls({
-    file,
-    form,
-    updateFile,
-}: {
-    file: FileUploadFile;
-    form: React.MutableRefObject<HTMLFormElement | null>;
-    updateFile: (
-        updated: {
-            upload?: number;
-            uploadingResponse?: ReadableStreamDefaultReader<string> | null;
-        } | null
-    ) => void;
-}) {
+export default function VideoUploadControls() {
+    const { file, form, updateFile } = useContext(VideoContext);
+
+    if (!file) return null;
+
     return (
-        <div className="flex justify-between">
+        <div className="flex w-full justify-between">
             <div className="flex gap-3"></div>
             <div className="flex gap-2">
                 {file.upload <= 0 ? (
