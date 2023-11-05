@@ -16,7 +16,7 @@ export default function VideoUploadRejections({
         .filter((value, index, array) => array.indexOf(value) === index);
 
     return (
-        <p className="flex flex-col items-center gap-1 text-xs text-text-dark">
+        <p className="flex max-w-sm flex-col items-center gap-1 text-center text-xs text-text-dark">
             The following files where not accepted:{" "}
             {formatEnumeration(fileNames)}
             <br />
