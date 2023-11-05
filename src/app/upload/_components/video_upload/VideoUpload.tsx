@@ -8,7 +8,6 @@ import React, {
     useState,
 } from "react";
 
-import { formatYear } from "@/format";
 import { search } from "@/tmdb/search";
 
 import { FileUploadFile, FilesContext } from "../FilesProvider";
@@ -20,6 +19,8 @@ import VideoUploadPreview from "./VideoUploadPreview";
 import VideoUploadProgressBar from "./VideoUploadProgressBar";
 
 export default function VideoUpload({ file }: { file: FileUploadFile }) {
+    const container = useRef<HTMLDivElement | null>(null);
+
     const { setFiles } = useContext(FilesContext);
 
     const [searchResults, setSearchResults] =
@@ -30,10 +31,9 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
 
     useEffect(() => {
         search(file.name).then((x) => {
-            console.log(x);
             setSearchResults(x);
-            if (x && !currentResult) {
-                setCurrentResult(x.best);
+            if (x) {
+                setCurrentResult((prev) => prev ?? x.best);
             }
         });
     }, [file.name]);
@@ -48,6 +48,7 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
         ) =>
             setFiles((prev) => {
                 const index = prev.findIndex((x) => x.name === file.name);
+                if (index < 0) return [...prev];
 
                 if (updated !== null) {
                     const file = prev[index];
@@ -63,7 +64,7 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
 
                 return [...prev];
             }),
-        [file]
+        [file, setFiles]
     );
 
     return (
@@ -82,8 +83,11 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
                 <section className="flex w-full flex-col gap-3">
                     <div className="flex w-full gap-3">
                         <VideoUploadPreview />
-                        <div className="flex w-full flex-col gap-3">
-                            <VideoUploadControls />
+                        <div
+                            ref={container}
+                            className="flex w-full flex-col gap-3"
+                        >
+                            <VideoUploadControls container={container} />
                             <VideoDescription />
                         </div>
                     </div>
