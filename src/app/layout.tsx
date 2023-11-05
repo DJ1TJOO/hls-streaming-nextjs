@@ -20,20 +20,21 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body
-                className={clsx(
-                    inter.className,
-                    "flex h-screen gap-4 overflow-visible bg-primary pl-6 pt-6"
-                )}
-            >
-                <Sidebar />
-                <main className="relative flex h-full w-full flex-col gap-4">
-                    <Topbar />
-                    <div className="absolute top-14 z-10 h-4 min-h-[1rem] w-full bg-gradient-to-b from-primary"></div>
-                    <div className="scrollbar-none -mt-4 flex flex-col gap-6 overflow-y-auto pb-6 pr-6 pt-4 filter">
-                        {children}
-                    </div>
-                </main>
+            <body className={clsx(inter.className, "h-screen")}>
+                <div
+                    className={
+                        "flex h-full gap-4 overflow-visible bg-primary pl-6 pt-6"
+                    }
+                >
+                    <Sidebar />
+                    <main className="relative flex h-full w-full flex-col gap-4">
+                        <Topbar />
+                        <div className="absolute top-14 z-10 h-4 min-h-[1rem] w-full bg-gradient-to-b from-primary"></div>
+                        <div className="scrollbar-none -mt-4 flex flex-col gap-6 overflow-y-auto pb-6 pr-6 pt-4 filter">
+                            {children}
+                        </div>
+                    </main>
+                </div>
             </body>
         </html>
     );
