@@ -1,5 +1,10 @@
 import path from "path";
 
+export type SeasonEpisode = {
+    season: number | null;
+    episode: number | null;
+} | null;
+
 const yearRegex = /\(?(?:19|(?:[2-9]\d))\d{2}\)?/m;
 const seasonEpisodeRegex =
     /(?:ix)?(?:(?:s|season|^)?\s*(\d{1,}))?(?:e|x|episode|^)\s*(\d{1,})/gim;
@@ -22,7 +27,7 @@ export function extractYear(fileName: string) {
     return yearRegex.exec(fileName)?.[0] ?? null;
 }
 
-export function extractSeasonEpisode(fileName: string) {
+export function extractSeasonEpisode(fileName: string): SeasonEpisode {
     let bestMatch = null;
     let match: RegExpExecArray | null;
     while ((match = seasonEpisodeRegex.exec(fileName)) !== null) {
