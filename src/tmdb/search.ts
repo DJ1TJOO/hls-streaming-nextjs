@@ -1,6 +1,9 @@
+"use server";
+
 import {
     Episode,
     MovieDb,
+    MovieResponse,
     MovieResult,
     SearchMultiResponse,
     ShowResponse,
@@ -16,17 +19,86 @@ import {
     prepareFileName,
 } from "./extractor";
 
-const db = new MovieDb(process.env.NEXT_PUBLIC_TMDB_API_KEY!);
+const db = new MovieDb(process.env.TMDB_API_KEY!);
 
+export type ShowResponseWithSeasons = ShowResponse & {
+    [key: `season/${number}`]: TvSeasonResponse | undefined;
+};
+
+export type ShowResponseWithSeasonAndEpisode = ShowResponse & {
+    [key: `season/${number}`]: TvSeasonResponse | undefined;
+    [key: `season/${number}/episode/${number}`]: Episode | undefined;
+};
+
+export type MovieWithCollection = MovieResponse & {
+    belongs_to_collection?: {
+        id: number;
+        name: string;
+        poster_path?: string;
+        backdrop_path?: string;
+    };
+};
 export type SearchResult =
     | {
-          movieSeries: MovieResult;
+          movie: MovieWithCollection;
+          tv: null;
           episode: null;
       }
     | {
-          movieSeries: TvResult;
+          movie: null;
+          tv: ShowResponseWithSeasons;
           episode: Episode & { runtime?: number };
       };
+
+export async function searchWihId(
+    tmdb_id: number,
+    tmdb_season_nr?: number | null,
+    tmdb_episode_nr?: number | null
+) {
+    if (
+        (typeof tmdb_season_nr !== "undefined" &&
+            typeof tmdb_episode_nr === "undefined") ||
+        (typeof tmdb_season_nr === "undefined" &&
+            typeof tmdb_episode_nr !== "undefined") ||
+        (tmdb_season_nr !== null && tmdb_episode_nr === null) ||
+        (tmdb_season_nr === null && tmdb_episode_nr !== null)
+    ) {
+        return null;
+    }
+
+    const isEpisode =
+        typeof tmdb_season_nr !== "undefined" &&
+        typeof tmdb_episode_nr !== "undefined" &&
+        tmdb_season_nr !== null &&
+        tmdb_episode_nr !== null;
+    if (isEpisode) {
+        const serie = (await db.tvInfo({
+            id: tmdb_id,
+            append_to_response: `season/${tmdb_season_nr},season/${tmdb_season_nr}/episode/${tmdb_episode_nr}`,
+        })) as ShowResponseWithSeasonAndEpisode;
+
+        const episode =
+            serie[`season/${tmdb_season_nr}/episode/${tmdb_episode_nr}`];
+        if (
+            typeof serie[`season/${tmdb_season_nr}`] === "undefined" ||
+            typeof episode === "undefined"
+        )
+            return null;
+
+        return {
+            movie: null,
+            tv: serie,
+            episode,
+        };
+    }
+
+    const movie = (await db.movieInfo(tmdb_id)) as MovieWithCollection;
+    return {
+        movie,
+        tv: null,
+        episode: null,
+    };
+}
 
 export async function search(fileName: string) {
     const preparedFileName = prepareFileName(fileName);
@@ -91,16 +163,21 @@ async function resolveEpisodesMap(
     seasonEpisode: SeasonEpisode,
     result: MovieResult | TvResult
 ) {
-    if (result.media_type === "movie") {
-        return {
-            movieSeries: result,
-            episode: null,
-        };
-    }
-
-    // No valid id so cannot search for episodes
+    // No valid id so cannot search for movie, episodes
     if (!result.id) {
         return [];
+    }
+
+    if (result.media_type === "movie") {
+        const movie = (await db.movieInfo({
+            id: result.id,
+        })) as MovieWithCollection;
+
+        return {
+            movie,
+            tv: null,
+            episode: null,
+        };
     }
 
     // Get seaons and info
@@ -114,12 +191,13 @@ async function resolveEpisodesMap(
         append_to_response: preTv.seasons
             ?.map((x) => `season/${x.season_number}`)
             .join(","),
-    })) as ShowResponse & { [key: `season/${number}`]: TvSeasonResponse };
+    })) as ShowResponseWithSeasons;
 
     if (!tv.seasons) return [];
     const tvSeasons = tv.seasons.flatMap((season) =>
-        typeof season.season_number !== "undefined"
-            ? tv[`season/${season.season_number}`]
+        typeof season.season_number !== "undefined" &&
+        typeof tv[`season/${season.season_number}`] !== "undefined"
+            ? tv[`season/${season.season_number}`]!
             : []
     );
 
@@ -137,7 +215,8 @@ async function resolveEpisodesMap(
         if (!episode) return [];
 
         return {
-            movieSeries: result,
+            movie: null,
+            tv,
             episode,
         };
     }
@@ -148,7 +227,8 @@ async function resolveEpisodesMap(
         if (!episode) return [];
 
         return {
-            movieSeries: result,
+            movie: null,
+            tv,
             episode,
         };
     }
@@ -171,8 +251,9 @@ async function resolveEpisodesMap(
     ) as Episode[];
 
     return resolvedEpisodesFiltered.map((episode) => ({
-        movieSeries: result,
-        episode: episode,
+        movie: null,
+        tv,
+        episode,
     }));
 }
 
@@ -241,10 +322,10 @@ function findBestResult(results: SearchResult[], preparedFileName: string) {
     const year = extractYear(preparedFileName);
     if (!year) return results[0];
 
-    const bestResult = results.find((x) =>
-        x.movieSeries.media_type === "tv"
-            ? x.movieSeries.first_air_date?.includes(year)
-            : x.movieSeries.release_date?.includes(year)
+    const bestResult = results.find(
+        (x) =>
+            x.movie?.release_date?.includes(year) ||
+            x.tv?.first_air_date?.includes(year)
     );
     return bestResult ?? results[0];
 }
