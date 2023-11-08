@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id      	      String  @id @default(uuid())
+  email           String  @unique
+  username        String
+  password        String
+}
+
+model Serie {
+  id      	          String  @id @default(uuid())
+  tmdb_id             Int     @unique
+  tmdb_collection_id  Int?
+  title               String
+  overview            String
+  poster_path         String
+  backdrop_path       String
+  season_count        Int
+  episode_count       Int
+  release_date    DateTime
+  seasons             Season[]
+  episodes            Video[]
+  collection          Collection? @relation(fields: [tmdb_collection_id], references: [tmdb_id])
+}
+
+model Season {
+  id      	      String  @id @default(uuid())
+  tmdb_serie_id   Int
+  tmdb_season_nr  Int
+  title           String
+  overview        String
+  poster_path     String
+  episode_count   Int
+  release_date    DateTime
+
+  serie           Serie @relation(fields: [tmdb_serie_id], references: [tmdb_id])
+  episodes        Video[]
+  @@unique([tmdb_serie_id, tmdb_season_nr])
+}
+
+model Collection {
+  id      	      String  @id @default(uuid())
+  tmdb_id         Int     @unique
+  title           String
+  overview        String
+  poster_path     String
+  backdrop_path   String
+  parts_movie     Video[]
+  parts_serie     Serie[]
+}
+
+model Video {
+  id      	          String  @id @default(uuid())
+  tmdb_id             Int?
+  tmdb_serie_id       Int?
+  tmdb_season_nr      Int?
+  tmdb_episode_nr     Int?
+  tmdb_collection_id  Int?
+  duration            Int
+  title               String
+  overview            String
+  release_date        DateTime
+  poster_path         String?
+  backdrop_path       String?
+  completed_upload    Boolean @default(false)
+
+  serie               Serie? @relation(fields: [tmdb_serie_id], references: [tmdb_id])
+  season              Season? @relation(fields: [tmdb_serie_id, tmdb_season_nr], references: [tmdb_serie_id, tmdb_season_nr])
+  collection          Collection? @relation(fields: [tmdb_collection_id], references: [tmdb_id])
+  @@unique([tmdb_id, tmdb_serie_id, tmdb_season_nr, tmdb_episode_nr, tmdb_collection_id])
+}
