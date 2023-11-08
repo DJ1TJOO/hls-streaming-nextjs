@@ -58,31 +58,33 @@ export default function VideoUploadControls({
                             {currentProgress < 1 ? "Uploading" : "Uploaded"}
                         </div>
                     ))}
-                <button
-                    type="button"
-                    onClick={async () => {
-                        if (currentProgress > 0) {
-                            if (cancelUpload instanceof AbortController) {
-                                await cancelUpload.abort();
-                            } else if (
-                                cancelUpload instanceof
-                                ReadableStreamDefaultReader
-                            ) {
-                                await cancelUpload.cancel();
+                {currentProgress < 1 && (
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            if (currentProgress > 0) {
+                                if (cancelUpload instanceof AbortController) {
+                                    await cancelUpload.abort();
+                                } else if (
+                                    cancelUpload instanceof
+                                    ReadableStreamDefaultReader
+                                ) {
+                                    await cancelUpload.cancel();
+                                }
+
+                                setCurrentProgress(0);
+                                return;
                             }
 
-                            setCurrentProgress(0);
-                            return;
-                        }
-
-                        URL.revokeObjectURL(file.preview);
-                        removeFile();
-                    }}
-                    className="flex gap-2 rounded-xl bg-secondairy py-2 pl-3 pr-4 text-sm text-text"
-                >
-                    <DocumentMinusIcon className="h-5 w-5" />
-                    {currentProgress > 0 ? "Cancel" : "Remove"}
-                </button>
+                            URL.revokeObjectURL(file.preview);
+                            removeFile();
+                        }}
+                        className="flex gap-2 rounded-xl bg-secondairy py-2 pl-3 pr-4 text-sm text-text"
+                    >
+                        <DocumentMinusIcon className="h-5 w-5" />
+                        {currentProgress > 0 ? "Cancel" : "Remove"}
+                    </button>
+                )}
             </div>
         </div>
     );
