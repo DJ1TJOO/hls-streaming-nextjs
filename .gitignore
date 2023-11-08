@@ -2,6 +2,7 @@
 
 /videos
 *.db
+.env*
 
 # dependencies
 /node_modules
