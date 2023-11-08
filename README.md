@@ -16,6 +16,10 @@ UPLOAD_URL="videos"
 
 Build on the usb drive with a pc with node installed.
 
+```
+npm install
+```
+
 #### Env
 
 Create `.env.production` with `TMDB_API_KEY`, `DATABASE_URL` and `UPLOAD_URL`
@@ -31,14 +35,22 @@ UPLOAD_URL="../videos"
 ### Prisma
 
 Generate and apply prisma
-`npm run prismaGenerateProduction`<br/>
-`npm run prismaDeployProduction`
+
+```
+npm run prismaGenerateProduction
+```
+
+```
+npm run prismaDeployProduction
+```
 
 ### Build
 
 Build nextjs site
-`npm install` <br/>
-`npm run build`
+
+```
+npm run build
+```
 
 After this make sure a node installation is located on the usb drive `..\node-v21.1.0-win-x64\`
 
