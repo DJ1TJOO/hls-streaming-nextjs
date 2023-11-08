@@ -53,7 +53,7 @@ export default function FileUpload() {
                             preview: URL.createObjectURL(file),
                             duration: await getDuration(file),
                             upload: 0,
-                            uploadingResponse: null,
+                            cancelUploadingResponse: null,
                         })
                     )
                 );

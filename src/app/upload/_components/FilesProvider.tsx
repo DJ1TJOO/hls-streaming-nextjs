@@ -6,7 +6,7 @@ export type FileUploadFile = File & {
     preview: string;
     duration: number;
     upload: number;
-    uploadingResponse: ReadableStreamDefaultReader<string> | null;
+    cancelUploadingResponse: (() => void | Promise<void>) | null;
 };
 
 export const FilesContext = createContext<{
