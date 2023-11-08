@@ -9,7 +9,7 @@ import path from "path";
 import insert from "./insert";
 import { ValidatedSearchResult } from "./validate";
 
-export default async function (
+export default async function transcode(
     req: NextRequest,
     dirPath: string,
     tmdbApiKey: string,
