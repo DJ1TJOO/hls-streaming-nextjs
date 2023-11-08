@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS video (
    overview text NOT NULL,
    release_date date NOT NULL,
    poster_path text NOT NULL,
-   backdrop_path text NOT NULL
+   backdrop_path text NOT NULL,
+   completed_upload boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS watch (

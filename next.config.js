@@ -1,4 +1,16 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
+const withBundleAnalyzer = require("@next/bundle-analyzer")();
 
-module.exports = nextConfig
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    webpack: (config, context) => {
+        config.plugins.push(
+            new context.webpack.DefinePlugin({
+                "process.env.FLUENTFFMPEG_COV": false,
+            })
+        );
+
+        return config;
+    },
+};
+
+module.exports = nextConfig;

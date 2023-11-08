@@ -20,7 +20,7 @@ export default function Sidebar() {
                 <span className="text-xl font-medium">STREAMER</span>
             </header>
             <User username={"Thomas"} email={"t.ferb1@gmail.com"} />
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-6">
                 <NavSection
                     label={"Menu"}
                     buttons={[

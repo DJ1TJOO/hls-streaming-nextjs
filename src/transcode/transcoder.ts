@@ -1,5 +1,7 @@
 import { Logger } from "@/logger";
-import ffmpeg from "fluent-ffmpeg";
+import { forcePosixPath } from "@/pathPosix";
+import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg";
+import { rm } from "fs/promises";
 
 export interface TranscoderPostProcessor {
     postProcess(inputFile: string, outputPath: string): Promise<void>;
@@ -10,6 +12,7 @@ export class Transcoder {
     private outputPath;
     private postProcessor;
     private logger;
+    private _commands: FfmpegCommand[] = [];
 
     constructor(
         inputFile: string,
@@ -17,10 +20,14 @@ export class Transcoder {
         postProcessor?: TranscoderPostProcessor,
         logger?: Logger
     ) {
-        this.inputFile = inputFile;
-        this.outputPath = outputPath;
+        this.inputFile = forcePosixPath(inputFile);
+        this.outputPath = forcePosixPath(outputPath);
         this.postProcessor = postProcessor;
         this.logger = logger;
+    }
+
+    get inputFilePath() {
+        return this.inputFile;
     }
 
     transcode(
@@ -43,16 +50,16 @@ export class Transcoder {
             name: x.name,
         }));
 
-        return new Promise<void>((res) => {
-            ffmpeg(this.inputFile)
+        return new Promise<void>((res, rej) => {
+            const command = ffmpeg(this.inputFile)
                 // .on("start", function (commandLine) {
-                // 	console.log("Spawned Ffmpeg with command: " + commandLine);
+                //     console.log("Spawned Ffmpeg with command: " + commandLine);
                 // })
                 // .on("error", function (error) {
-                // 	console.log(error);
+                //     console.log(error);
                 // })
                 // .on("stderr", function (stderrLine) {
-                // 	console.log("Stderr output: " + stderrLine);
+                //     console.log("Stderr output: " + stderrLine);
                 // })
                 .complexFilter([
                     {
@@ -140,7 +147,7 @@ export class Transcoder {
                 )
                 .output(`${this.outputPath}/segments_%v/manifest.m3u8`)
                 .on("progress", (status: { percent: number }) => {
-                    const percentage = Math.min(status.percent / 100, 0.99);
+                    const percentage = Math.min(status.percent / 100, 0.9999);
 
                     if (progress) progress(percentage);
                     this.logger?.info(
@@ -150,7 +157,6 @@ export class Transcoder {
                     );
                 })
                 .on("end", async () => {
-                    if (progress) progress(1);
                     this.logger?.info("finished transcode");
 
                     if (this.postProcessor) {
@@ -162,9 +168,27 @@ export class Transcoder {
                         this.logger?.info("finished post processing");
                     }
 
+                    if (progress) progress(1);
                     res();
-                })
-                .run();
+                });
+
+            command.run();
+            command.on("error", async () => {
+                // Cleanup
+                await rm(this.outputPath, {
+                    recursive: true,
+                    force: true,
+                });
+
+                rej("aborted");
+            });
+            this._commands.push(command);
         });
+    }
+
+    abort() {
+        for (const command of this._commands) {
+            command.kill("SIGKILL");
+        }
     }
 }

@@ -27,7 +27,7 @@ export default function NotificationMenu({
                     >
                         <Popover.Panel
                             focus
-                            className="buttom-0 absolute right-0 z-10 origin-top-right"
+                            className="buttom-0 absolute right-0 z-20 origin-top-right"
                         >
                             <div className="w-56 overflow-hidden rounded-md bg-secondairy p-1 shadow-lg ring-1 ring-black/5 focus:outline-none">
                                 {children}
