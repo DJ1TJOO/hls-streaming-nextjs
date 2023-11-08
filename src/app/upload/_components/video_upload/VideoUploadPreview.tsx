@@ -34,7 +34,7 @@ export default function VideoUploadPreview() {
                         onLoadedMetadata={(e) => {
                             const video = e.target as HTMLVideoElement;
                             video.currentTime = Math.min(
-                                video.duration,
+                                video.duration / 2,
                                 60 * 3
                             );
                         }}
