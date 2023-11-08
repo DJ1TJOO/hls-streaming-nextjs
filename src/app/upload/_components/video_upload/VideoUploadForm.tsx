@@ -9,7 +9,7 @@ function isNumeric(str: string) {
 }
 
 export default function VideoUploadForm({ children }: PropsWithChildren) {
-    const { form, file, updateFile } = useContext(VideoContext);
+    const { form, file, updateFile, currentResult } = useContext(VideoContext);
 
     return (
         <form
@@ -17,37 +17,77 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
             action={async () => {
                 if (!file) return;
 
-                const formData = new FormData();
-                formData.append("file", file);
-
-                const res = await fetch("/api/upload", {
-                    method: "post",
-                    body: formData,
+                const controller = new AbortController();
+                const signal = controller.signal;
+                updateFile({
+                    cancelUploadingResponse: () => controller.abort(),
                 });
 
-                if (res.status !== 200 || !res.body) return;
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append(
+                    "tmdb",
+                    JSON.stringify({
+                        tmdb_id:
+                            currentResult?.movie?.id ?? currentResult?.tv?.id,
+                        tmdb_season_nr:
+                            currentResult?.episode?.season_number ?? null,
+                        tmdb_episode_nr:
+                            currentResult?.episode?.episode_number ?? null,
+                    })
+                );
 
-                const reader = res.body
-                    .pipeThrough(new TextDecoderStream())
-                    .getReader();
-                updateFile({ uploadingResponse: reader });
+                try {
+                    const res = await fetch("/api/upload", {
+                        method: "post",
+                        body: formData,
+                        signal,
+                    });
 
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
+                    if (res.status !== 200 || !res.body) {
+                        // TODO: done uploading: remove on success?
+                        updateFile({
+                            cancelUploadingResponse: null,
+                            upload: 0,
+                        });
+                        return;
+                    }
 
-                    const parts = value.split(">");
-                    if (
-                        parts.length < 2 ||
-                        parts[0] !== file.name ||
-                        !isNumeric(parts[1])
-                    )
-                        continue;
+                    const reader = res.body
+                        .pipeThrough(new TextDecoderStream())
+                        .getReader();
+                    updateFile({
+                        cancelUploadingResponse: () => reader.cancel(),
+                    });
 
-                    updateFile({ upload: parseFloat(parts[1]) });
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+
+                        const parts = value.split(">");
+
+                        if (parts.length < 2 || parts[0] !== file.name)
+                            continue;
+
+                        const command = parts[1];
+                        if (
+                            command === "progress" &&
+                            parts.length > 2 &&
+                            isNumeric(parts[2])
+                        ) {
+                            updateFile({ upload: parseFloat(parts[2]) });
+                        } else if (command === "conflict") {
+                            // TODO: conflict
+                        } else if (command === "done") {
+                            updateFile({ upload: 1 });
+                        }
+                    }
+
+                    // TODO: done uploading: remove on success?
+                    updateFile({ cancelUploadingResponse: null, upload: 0 });
+                } catch (error) {
+                    updateFile({ cancelUploadingResponse: null, upload: 0 });
                 }
-
-                updateFile({ uploadingResponse: null });
             }}
         >
             {children}

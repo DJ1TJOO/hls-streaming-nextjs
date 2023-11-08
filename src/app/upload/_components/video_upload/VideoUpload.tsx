@@ -21,7 +21,7 @@ import VideoUploadProgressBar from "./VideoUploadProgressBar";
 export default function VideoUpload({ file }: { file: FileUploadFile }) {
     const container = useRef<HTMLDivElement | null>(null);
 
-    const { setFiles } = useContext(FilesContext);
+    const { setFiles, files } = useContext(FilesContext);
 
     const [searchResults, setSearchResults] =
         useState<Awaited<ReturnType<typeof search>>>(null);
@@ -43,28 +43,29 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
         (
             updated: {
                 upload?: number;
-                uploadingResponse?: ReadableStreamDefaultReader<string> | null;
+                cancelUploadingResponse?: (() => void | Promise<void>) | null;
             } | null
-        ) =>
-            setFiles((prev) => {
-                const index = prev.findIndex((x) => x.name === file.name);
-                if (index < 0) return [...prev];
+        ) => {
+            const index = files.findIndex((x) => x.name === file.name);
+            if (index < 0) return;
 
-                if (updated !== null) {
-                    const file = prev[index];
-                    if (typeof updated.upload !== "undefined") {
-                        file.upload = updated.upload;
-                    }
-                    if (typeof updated.uploadingResponse !== "undefined") {
-                        file.uploadingResponse = updated.uploadingResponse;
-                    }
-                } else {
-                    prev.splice(index, 1);
+            if (updated !== null) {
+                const file = files[index];
+                if (typeof updated.upload !== "undefined") {
+                    file.upload = updated.upload;
                 }
+                if (typeof updated.cancelUploadingResponse !== "undefined") {
+                    file.cancelUploadingResponse =
+                        updated.cancelUploadingResponse;
+                }
+                files[index] = file;
+            } else {
+                files.splice(index, 1);
+            }
 
-                return [...prev];
-            }),
-        [file, setFiles]
+            setFiles([...files]);
+        },
+        [file, files, setFiles]
     );
 
     return (

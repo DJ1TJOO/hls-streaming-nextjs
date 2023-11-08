@@ -19,7 +19,7 @@ export const VideoContext = createContext<{
     updateFile: (
         updated: {
             upload?: number;
-            uploadingResponse?: ReadableStreamDefaultReader<string> | null;
+            cancelUploadingResponse?: (() => void | Promise<void>) | null;
         } | null
     ) => void;
     searchResults: VideoType["searchResults"] | null;

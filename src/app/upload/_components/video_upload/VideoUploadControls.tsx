@@ -25,6 +25,7 @@ export default function VideoUploadControls({
                 <VideoUploadSearch container={container} />
             </div>
             <div className="flex gap-2">
+                {/* TODO: prevent upload when no currentresult */}
                 {file.upload <= 0 ? (
                     <button
                         type="button"
@@ -46,8 +47,8 @@ export default function VideoUploadControls({
                 <button
                     type="button"
                     onClick={async () => {
-                        if (file.upload > 0 && file.uploadingResponse) {
-                            await file.uploadingResponse.cancel();
+                        if (file.upload > 0 && file.cancelUploadingResponse) {
+                            await file.cancelUploadingResponse();
                             updateFile({ upload: 0 });
                             return;
                         }
@@ -57,7 +58,7 @@ export default function VideoUploadControls({
                     className="flex gap-2 rounded-xl bg-secondairy py-2 pl-3 pr-4 text-sm text-text"
                 >
                     <DocumentMinusIcon className="h-5 w-5" />
-                    {file.upload > 0 && file.uploadingResponse
+                    {file.upload > 0 && file.cancelUploadingResponse
                         ? "Cancel"
                         : "Remove"}
                 </button>
