@@ -68,6 +68,7 @@ async function handleTranscode(
     { file, tmdb }: { file: File; tmdb: ValidatedSearchResult }
 ) {
     const video = await insert(tmdbApiKey, tmdb);
+
     if (video === null) {
         write(`${file.name}>conflict`);
         return;

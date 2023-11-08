@@ -7,7 +7,7 @@ export type SeasonEpisode = {
 
 const yearRegex = /\(?(?:19|(?:[2-9]\d))\d{2}\)?/m;
 const seasonEpisodeRegex =
-    /(?:ix)?(?:(?:s|season|^)?\s*(\d{1,}))?\s??(?:e|x|episode|^)\s*(\d{1,})/gim;
+    /(?:ix)?(?:(?:s|season|^)?\s*(\d{1,}))?\s??(?:e|x|episode)\s*(\d{1,})/gim;
 
 export function prepareFileName(fileName: string) {
     return path

@@ -16,14 +16,17 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
         setCurrentProgress,
         setCurrentError,
         currentResult,
-        cancelUpload,
     } = useContext(VideoContext);
 
     return (
         <form
             ref={form}
-            action={async () => {
+            onSubmit={async (e) => {
+                e.preventDefault();
                 if (!file) return;
+
+                const controller = new AbortController();
+                setCancelUpload(controller);
 
                 const formData = new FormData();
                 formData.append("file", file);
@@ -43,10 +46,8 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
                     const res = await fetch("/api/upload", {
                         method: "post",
                         body: formData,
-                        signal:
-                            cancelUpload instanceof AbortController
-                                ? cancelUpload.signal
-                                : undefined,
+                        signal: controller.signal,
+                        cache: "no-store",
                     });
 
                     if (res.status !== 200 || !res.body) {

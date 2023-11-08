@@ -46,9 +46,6 @@ export default function VideoUploadControls({
                                 setCurrentProgress(0.001);
                                 setCurrentError(null);
 
-                                const controller = new AbortController();
-                                setCancelUpload(controller);
-
                                 form.current.requestSubmit();
                             }}
                         >
@@ -73,6 +70,7 @@ export default function VideoUploadControls({
                             ) {
                                 await cancelUpload.cancel();
                             }
+
                             setCurrentProgress(0);
                             return;
                         }

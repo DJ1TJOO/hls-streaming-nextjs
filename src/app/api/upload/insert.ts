@@ -24,11 +24,11 @@ async function insertEpisode(
     tv: NonNullable<ValidatedSearchResult["tv"]>,
     episode: NonNullable<ValidatedSearchResult["episode"]>
 ) {
-    if (!insertSerie(tv)) {
+    if (!(await insertSerie(tv))) {
         return null;
     }
 
-    if (!insertSeason(tv, episode.season_number)) {
+    if (!(await insertSeason(tv, episode.season_number))) {
         return null;
     }
 
@@ -118,7 +118,7 @@ async function insertMovie(
     // Find or create collection
     if (
         movie.belongs_to_collection &&
-        !insertCollection(tmdbApiKey, movie.belongs_to_collection)
+        !(await insertCollection(tmdbApiKey, movie.belongs_to_collection))
     ) {
         return null;
     }
