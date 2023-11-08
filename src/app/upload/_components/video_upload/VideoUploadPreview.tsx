@@ -61,7 +61,6 @@ export default function VideoUploadPreview() {
                                     });
                                 }
                             }
-                            file && URL.revokeObjectURL(file.preview);
                         }}
                         className="hidden"
                     />

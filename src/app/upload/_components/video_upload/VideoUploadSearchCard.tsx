@@ -17,49 +17,35 @@ export default function VideoUploadSearchCard({
 }) {
     const { currentResult, setCurrentResult } = useContext(VideoContext);
 
-    const movieSeries = result.movieSeries;
     const episode = result.episode;
+    const isCurrent =
+        result.tv?.id === currentResult?.tv?.id &&
+        result.movie?.id === currentResult?.movie?.id &&
+        episode?.season_number === currentResult?.episode?.season_number &&
+        episode?.episode_number === currentResult?.episode?.episode_number;
+
+    const title = result.movie?.title ?? result.tv?.name;
+    const description = result.movie?.overview ?? result.tv?.overview;
+    const year = result.movie?.release_date ?? result.tv?.first_air_date ?? "";
 
     return (
         <div
             className={clsx(
                 "w-full rounded-xl p-3",
-                movieSeries.id === currentResult?.movieSeries.id &&
-                    episode?.season_number ===
-                        currentResult?.episode?.season_number &&
-                    episode?.episode_number ===
-                        currentResult?.episode?.episode_number
-                    ? "bg-primary"
-                    : "cursor-pointer bg-tertiary"
+                isCurrent ? "bg-primary" : "cursor-pointer bg-tertiary"
             )}
             onClick={() => {
-                if (
-                    currentResult?.movieSeries.id === movieSeries.id &&
-                    currentResult?.episode?.id === episode?.id
-                )
-                    return;
+                if (isCurrent) return;
 
                 setCurrentResult(() => result);
                 closeModal();
             }}
         >
             <h1 className="font-medium text-text">
-                {movieSeries.media_type === "movie"
-                    ? movieSeries.title
-                    : movieSeries.name}{" "}
-                <span className="text-text-dark">
-                    (
-                    {formatYear(
-                        (movieSeries.media_type === "movie"
-                            ? movieSeries.release_date
-                            : movieSeries.first_air_date) ?? ""
-                    )}
-                    )
-                </span>
+                {title}{" "}
+                <span className="text-text-dark">({formatYear(year)})</span>
             </h1>
-            <p className="line-clamp-2 text-sm text-text-dark">
-                {movieSeries.overview}
-            </p>
+            <p className="line-clamp-2 text-sm text-text-dark">{description}</p>
             {episode && (
                 <div className="mt-2">
                     <h2 className="font-medium text-text">

@@ -7,7 +7,8 @@ import Hls from "hls.js";
 export default function Home() {
     const videoRef = useRef<HTMLVideoElement>(null);
     const selectRef = useRef<HTMLSelectElement>(null);
-    const src = "/videos/6b2c7118-8c52-4bbe-8ca5-fb4f5d43d0b4/master.m3u8";
+    const src =
+        "/content/videos/6b2c7118-8c52-4bbe-8ca5-fb4f5d43d0b4/master.m3u8";
 
     useEffect(() => {
         const video = videoRef.current;
