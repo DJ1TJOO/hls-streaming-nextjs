@@ -1,3 +1,4 @@
+import prisma from "@/db";
 import { RelativeMaster } from "@/transcode/realativeMaster";
 import { Transcoder } from "@/transcode/transcoder";
 import { existsSync } from "fs";
@@ -18,9 +19,14 @@ export default async function (
     }[]
 ) {
     const transcoders: Transcoder[] = [];
+    const abortInserted: (() => Promise<void>)[] = [];
     req.signal.addEventListener("abort", () => {
         for (const transcoder of transcoders) {
             transcoder.abort();
+        }
+
+        for (const abort of abortInserted) {
+            abort();
         }
     });
 
@@ -35,7 +41,8 @@ export default async function (
                 dirPath,
                 tmdbApiKey,
                 transcoders,
-                (message) => writer.write(encoder.encode(message))
+                (message) => writer.write(encoder.encode(message)),
+                (cb) => abortInserted.push(cb)
             )
         )
     )
@@ -57,13 +64,51 @@ async function handleTranscode(
     tmdbApiKey: string,
     transcoders: Transcoder[],
     write: (message: string) => void,
+    registerAbortInserted: (cb: () => Promise<void>) => void,
     { file, tmdb }: { file: File; tmdb: ValidatedSearchResult }
 ) {
     const video = await insert(tmdbApiKey, tmdb);
     if (video === null) {
-        write(`${file}>conflict`);
+        write(`${file.name}>conflict`);
         return;
     }
+
+    registerAbortInserted(async () => {
+        await prisma.video.delete({
+            where: {
+                id: video.id,
+            },
+        });
+
+        // Delete season and serie/collection if not used by others
+        try {
+            if (video.tmdb_season_nr !== null && video.tmdb_serie_id !== null) {
+                await prisma.season.delete({
+                    where: {
+                        tmdb_serie_id_tmdb_season_nr: {
+                            tmdb_serie_id: video.tmdb_serie_id,
+                            tmdb_season_nr: video.tmdb_season_nr,
+                        },
+                    },
+                });
+                await prisma.serie.delete({
+                    where: {
+                        tmdb_id: video.tmdb_serie_id,
+                    },
+                });
+            }
+        } catch (error) {}
+
+        try {
+            if (video.tmdb_collection_id !== null) {
+                await prisma.collection.delete({
+                    where: {
+                        tmdb_id: video.tmdb_collection_id,
+                    },
+                });
+            }
+        } catch (error) {}
+    });
 
     // Write file
     const fileName = file.name.replaceAll(/\s+/g, "_");
@@ -101,9 +146,9 @@ async function handleTranscode(
             5,
             96,
             (percentage) => {
-                write(`${file}>progess>${percentage.toFixed(4)}`);
+                write(`${file.name}>progress>${percentage.toFixed(4)}`);
             }
         )
-        .then(() => write(`${file}>done`))
+        .then(() => write(`${file.name}>done`))
         .catch(() => rm(transcoder.inputFilePath));
 }

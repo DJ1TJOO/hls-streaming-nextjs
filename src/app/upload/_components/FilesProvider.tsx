@@ -5,8 +5,6 @@ import React, { PropsWithChildren, createContext, useState } from "react";
 export type FileUploadFile = File & {
     preview: string;
     duration: number;
-    upload: number;
-    cancelUploadingResponse: (() => void | Promise<void>) | null;
 };
 
 export const FilesContext = createContext<{

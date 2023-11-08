@@ -15,7 +15,17 @@ export default function VideoUploadControls({
 }: {
     container: React.MutableRefObject<HTMLDivElement | null>;
 }) {
-    const { file, form, currentResult, updateFile } = useContext(VideoContext);
+    const {
+        file,
+        form,
+        currentResult,
+        removeFile,
+        currentProgress,
+        setCurrentProgress,
+        cancelUpload,
+        setCurrentError,
+        setCancelUpload,
+    } = useContext(VideoContext);
 
     if (!file) return null;
 
@@ -26,13 +36,20 @@ export default function VideoUploadControls({
             </div>
             <div className="flex gap-2">
                 {currentResult !== null &&
-                    (file.upload <= 0 ? (
+                    (currentProgress <= 0 ? (
                         <button
                             type="button"
                             className="flex gap-2 rounded-xl bg-action py-2 pl-3 pr-4 text-sm text-text"
                             onClick={() => {
-                                updateFile({ upload: 0.001 });
-                                if (form.current) form.current.requestSubmit();
+                                if (!form.current) return;
+
+                                setCurrentProgress(0.001);
+                                setCurrentError(null);
+
+                                const controller = new AbortController();
+                                setCancelUpload(controller);
+
+                                form.current.requestSubmit();
                             }}
                         >
                             <DocumentArrowUpIcon className="h-5 w-5" />
@@ -41,26 +58,32 @@ export default function VideoUploadControls({
                     ) : (
                         <div className="flex gap-2 rounded-xl bg-tertiary py-2 pl-3 pr-4 text-sm text-text">
                             <DocumentArrowUpIcon className="h-5 w-5" />
-                            Uploading
+                            {currentProgress < 1 ? "Uploading" : "Uploaded"}
                         </div>
                     ))}
                 <button
                     type="button"
                     onClick={async () => {
-                        if (file.upload > 0 && file.cancelUploadingResponse) {
-                            await file.cancelUploadingResponse();
-                            updateFile({ upload: 0 });
+                        if (currentProgress > 0) {
+                            if (cancelUpload instanceof AbortController) {
+                                await cancelUpload.abort();
+                            } else if (
+                                cancelUpload instanceof
+                                ReadableStreamDefaultReader
+                            ) {
+                                await cancelUpload.cancel();
+                            }
+                            setCurrentProgress(0);
                             return;
                         }
 
-                        updateFile(null);
+                        URL.revokeObjectURL(file.preview);
+                        removeFile();
                     }}
                     className="flex gap-2 rounded-xl bg-secondairy py-2 pl-3 pr-4 text-sm text-text"
                 >
                     <DocumentMinusIcon className="h-5 w-5" />
-                    {file.upload > 0 && file.cancelUploadingResponse
-                        ? "Cancel"
-                        : "Remove"}
+                    {currentProgress > 0 ? "Cancel" : "Remove"}
                 </button>
             </div>
         </div>

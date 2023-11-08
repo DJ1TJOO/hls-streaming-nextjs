@@ -9,19 +9,21 @@ function isNumeric(str: string) {
 }
 
 export default function VideoUploadForm({ children }: PropsWithChildren) {
-    const { form, file, updateFile, currentResult } = useContext(VideoContext);
+    const {
+        form,
+        file,
+        setCancelUpload,
+        setCurrentProgress,
+        setCurrentError,
+        currentResult,
+        cancelUpload,
+    } = useContext(VideoContext);
 
     return (
         <form
             ref={form}
             action={async () => {
                 if (!file) return;
-
-                const controller = new AbortController();
-                const signal = controller.signal;
-                updateFile({
-                    cancelUploadingResponse: () => controller.abort(),
-                });
 
                 const formData = new FormData();
                 formData.append("file", file);
@@ -41,24 +43,23 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
                     const res = await fetch("/api/upload", {
                         method: "post",
                         body: formData,
-                        signal,
+                        signal:
+                            cancelUpload instanceof AbortController
+                                ? cancelUpload.signal
+                                : undefined,
                     });
 
                     if (res.status !== 200 || !res.body) {
-                        // TODO: done uploading: remove on success?
-                        updateFile({
-                            cancelUploadingResponse: null,
-                            upload: 0,
-                        });
+                        setCancelUpload(() => null);
+                        setCurrentProgress(0);
+                        setCurrentError("Failed to upload");
                         return;
                     }
 
                     const reader = res.body
                         .pipeThrough(new TextDecoderStream())
                         .getReader();
-                    updateFile({
-                        cancelUploadingResponse: () => reader.cancel(),
-                    });
+                    setCancelUpload(reader);
 
                     while (true) {
                         const { value, done } = await reader.read();
@@ -70,23 +71,30 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
                             continue;
 
                         const command = parts[1];
+
                         if (
                             command === "progress" &&
                             parts.length > 2 &&
                             isNumeric(parts[2])
                         ) {
-                            updateFile({ upload: parseFloat(parts[2]) });
+                            setCurrentProgress(parseFloat(parts[2]));
                         } else if (command === "conflict") {
-                            // TODO: conflict
+                            setCurrentProgress(0);
+                            setCurrentError(
+                                "The movie or episode is already uploaded"
+                            );
                         } else if (command === "done") {
-                            updateFile({ upload: 1 });
+                            setCurrentProgress(1);
                         }
                     }
 
-                    // TODO: done uploading: remove on success?
-                    updateFile({ cancelUploadingResponse: null, upload: 0 });
+                    setCancelUpload(null);
                 } catch (error) {
-                    updateFile({ cancelUploadingResponse: null, upload: 0 });
+                    console.log(error);
+
+                    setCancelUpload(null);
+                    setCurrentProgress(0);
+                    setCurrentError("Failed to upload");
                 }
             }}
         >

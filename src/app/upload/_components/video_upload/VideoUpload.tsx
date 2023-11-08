@@ -21,12 +21,17 @@ import VideoUploadProgressBar from "./VideoUploadProgressBar";
 export default function VideoUpload({ file }: { file: FileUploadFile }) {
     const container = useRef<HTMLDivElement | null>(null);
 
-    const { setFiles, files } = useContext(FilesContext);
+    const { setFiles } = useContext(FilesContext);
 
     const [searchResults, setSearchResults] =
         useState<Awaited<ReturnType<typeof search>>>(null);
     const [currentResult, setCurrentResult] = useState<
         NonNullable<Awaited<ReturnType<typeof search>>>["best"] | null
+    >(null);
+    const [currentProgress, setCurrentProgress] = useState(0);
+    const [currentError, setCurrentError] = useState<string | null>(null);
+    const [cancelUpload, setCancelUpload] = useState<
+        AbortController | ReadableStreamDefaultReader<string> | null
     >(null);
 
     useEffect(() => {
@@ -39,44 +44,33 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
     }, [file.name]);
 
     const form = useRef<HTMLFormElement | null>(null);
-    const updateFile = useCallback(
-        (
-            updated: {
-                upload?: number;
-                cancelUploadingResponse?: (() => void | Promise<void>) | null;
-            } | null
-        ) => {
-            const index = files.findIndex((x) => x.name === file.name);
-            if (index < 0) return;
-
-            if (updated !== null) {
-                const file = files[index];
-                if (typeof updated.upload !== "undefined") {
-                    file.upload = updated.upload;
-                }
-                if (typeof updated.cancelUploadingResponse !== "undefined") {
-                    file.cancelUploadingResponse =
-                        updated.cancelUploadingResponse;
-                }
-                files[index] = file;
-            } else {
-                files.splice(index, 1);
-            }
-
-            setFiles([...files]);
-        },
-        [file, files, setFiles]
-    );
 
     return (
         <VideoContext.Provider
             value={{
                 file,
-                updateFile,
+                removeFile: () => {
+                    setFiles((prev) => {
+                        const current = [...prev];
+                        const index = current.findIndex(
+                            (x) => x.name === file.name
+                        );
+                        if (index < 0) return current;
+
+                        current.splice(index, 1);
+                        return current;
+                    });
+                },
                 currentResult,
                 setCurrentResult,
                 searchResults,
                 setSearchResults,
+                currentProgress,
+                setCurrentProgress,
+                currentError,
+                setCurrentError,
+                cancelUpload,
+                setCancelUpload,
                 form,
             }}
         >
@@ -89,6 +83,11 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
                             className="flex w-full flex-col gap-3"
                         >
                             <VideoUploadControls container={container} />
+                            {currentError && (
+                                <div className="flex w-fit gap-2 rounded-xl bg-error px-3 py-2 text-sm text-text">
+                                    {currentError}
+                                </div>
+                            )}
                             <VideoDescription />
                         </div>
                     </div>

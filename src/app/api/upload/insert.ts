@@ -1,5 +1,4 @@
 import prisma from "@/db";
-import { Video } from "@prisma/client";
 import { MovieDb } from "moviedb-promise";
 
 import inserted from "./inserted";

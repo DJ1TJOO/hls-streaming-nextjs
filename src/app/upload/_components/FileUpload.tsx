@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 
 import { DocumentArrowUpIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -52,8 +52,6 @@ export default function FileUpload() {
                         Object.assign(file, {
                             preview: URL.createObjectURL(file),
                             duration: await getDuration(file),
-                            upload: 0,
-                            cancelUploadingResponse: null,
                         })
                     )
                 );
@@ -94,10 +92,6 @@ export default function FileUpload() {
             onDrop,
             validator,
         });
-
-    useEffect(() => {
-        return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
-    }, [files]);
 
     return (
         <>

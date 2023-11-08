@@ -16,12 +16,7 @@ export type VideoType = {
 
 export const VideoContext = createContext<{
     file: VideoType["file"];
-    updateFile: (
-        updated: {
-            upload?: number;
-            cancelUploadingResponse?: (() => void | Promise<void>) | null;
-        } | null
-    ) => void;
+    removeFile: () => void;
     searchResults: VideoType["searchResults"] | null;
     setSearchResults: React.Dispatch<
         React.SetStateAction<VideoType["searchResults"]>
@@ -30,13 +25,29 @@ export const VideoContext = createContext<{
     setCurrentResult: React.Dispatch<
         React.SetStateAction<VideoType["currentResult"]>
     >;
+    currentProgress: number;
+    setCurrentProgress: React.Dispatch<React.SetStateAction<number>>;
+    currentError: string | null;
+    setCurrentError: React.Dispatch<React.SetStateAction<string | null>>;
+    cancelUpload: AbortController | ReadableStreamDefaultReader<string> | null;
+    setCancelUpload: React.Dispatch<
+        React.SetStateAction<
+            AbortController | ReadableStreamDefaultReader<string> | null
+        >
+    >;
     form: React.MutableRefObject<HTMLFormElement | null>;
 }>({
     file: null,
-    updateFile: () => {},
+    removeFile: () => {},
     currentResult: null,
     setCurrentResult: () => {},
     searchResults: null,
     setSearchResults: () => {},
+    currentProgress: 0,
+    setCurrentProgress: () => {},
+    currentError: null,
+    setCurrentError: () => {},
+    cancelUpload: null,
+    setCancelUpload: () => {},
     form: { current: null },
 });
