@@ -135,8 +135,9 @@ export default function VideoUploadSearch({
                                 <div
                                     className={clsx(
                                         "scrollbar-none flex flex-col gap-2 overflow-y-auto pb-3 pt-2",
-                                        !searchResultsFiltered ||
-                                            searchResultsFiltered.length < 1
+                                        (!searchResultsFiltered ||
+                                            searchResultsFiltered.length < 1) &&
+                                            !currentResult
                                             ? "max-h-20 flex-grow"
                                             : "max-h-80"
                                     )}
