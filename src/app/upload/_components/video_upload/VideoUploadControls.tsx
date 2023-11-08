@@ -15,7 +15,7 @@ export default function VideoUploadControls({
 }: {
     container: React.MutableRefObject<HTMLDivElement | null>;
 }) {
-    const { file, form, updateFile } = useContext(VideoContext);
+    const { file, form, currentResult, updateFile } = useContext(VideoContext);
 
     if (!file) return null;
 
@@ -25,25 +25,25 @@ export default function VideoUploadControls({
                 <VideoUploadSearch container={container} />
             </div>
             <div className="flex gap-2">
-                {/* TODO: prevent upload when no currentresult */}
-                {file.upload <= 0 ? (
-                    <button
-                        type="button"
-                        className="flex gap-2 rounded-xl bg-action py-2 pl-3 pr-4 text-sm text-text"
-                        onClick={() => {
-                            updateFile({ upload: 0.001 });
-                            if (form.current) form.current.requestSubmit();
-                        }}
-                    >
-                        <DocumentArrowUpIcon className="h-5 w-5" />
-                        Upload
-                    </button>
-                ) : (
-                    <div className="flex gap-2 rounded-xl bg-tertiary py-2 pl-3 pr-4 text-sm text-text">
-                        <DocumentArrowUpIcon className="h-5 w-5" />
-                        Uploading
-                    </div>
-                )}
+                {currentResult !== null &&
+                    (file.upload <= 0 ? (
+                        <button
+                            type="button"
+                            className="flex gap-2 rounded-xl bg-action py-2 pl-3 pr-4 text-sm text-text"
+                            onClick={() => {
+                                updateFile({ upload: 0.001 });
+                                if (form.current) form.current.requestSubmit();
+                            }}
+                        >
+                            <DocumentArrowUpIcon className="h-5 w-5" />
+                            Upload
+                        </button>
+                    ) : (
+                        <div className="flex gap-2 rounded-xl bg-tertiary py-2 pl-3 pr-4 text-sm text-text">
+                            <DocumentArrowUpIcon className="h-5 w-5" />
+                            Uploading
+                        </div>
+                    ))}
                 <button
                     type="button"
                     onClick={async () => {
