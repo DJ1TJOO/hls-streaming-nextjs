@@ -67,7 +67,7 @@ export function CanLeaveLink({
                 <Dialog
                     initialFocus={cancelButtonRef}
                     as="div"
-                    className="relative z-20"
+                    className="relative z-50"
                     onClose={closeModal}
                 >
                     <Transition.Child

@@ -30,7 +30,7 @@ export default function VideoUploadControls({
     if (!file) return null;
 
     return (
-        <div className="flex w-full justify-between">
+        <div className="flex w-full flex-col justify-between gap-2 sm:flex-row">
             <div className="flex gap-3">
                 <VideoUploadSearch container={container} />
             </div>

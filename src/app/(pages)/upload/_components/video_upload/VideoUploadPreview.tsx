@@ -17,7 +17,7 @@ export default function VideoUploadPreview() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     return (
-        <div className="h-fit w-[14rem] min-w-[14rem] max-w-[14rem] overflow-hidden rounded-2xl bg-tertiary">
+        <div className="h-fit w-full overflow-hidden rounded-b-lg rounded-t-2xl bg-tertiary sm:w-[14rem] sm:min-w-[14rem] sm:max-w-[14rem]">
             {image ? (
                 <Image
                     src={image.url}

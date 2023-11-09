@@ -70,7 +70,7 @@ export default function VideoUploadSearch({
             )}
 
             <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-10" onClose={closeModal}>
+                <Dialog as="div" className="relative z-50" onClose={closeModal}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -131,7 +131,7 @@ export default function VideoUploadSearch({
                                         Search
                                     </button>
                                 </div>
-                                <div className="absolute left-0 top-[3.25rem] z-10 h-2 min-h-[0.25rem] w-full bg-gradient-to-b from-secondairy"></div>
+                                <div className="absolute left-0 top-[3.25rem] z-30 h-2 min-h-[0.25rem] w-full bg-gradient-to-b from-secondairy"></div>
                                 <div
                                     className={clsx(
                                         "scrollbar-none flex flex-col gap-2 overflow-y-auto pb-3 pt-2",

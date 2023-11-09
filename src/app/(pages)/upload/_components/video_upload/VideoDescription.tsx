@@ -9,7 +9,7 @@ export default function VideoDescription() {
 
     if (!currentResult)
         return (
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="flex w-full flex-col gap-1">
                     <div className="h-7 w-1/3 animate-pulse rounded-md bg-tertiary" />
                     <div className="flex w-full flex-col gap-1">
@@ -30,7 +30,7 @@ export default function VideoDescription() {
         "";
 
     return (
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
             <div className="flex w-full flex-col gap-1">
                 <h1 className="text-xl font-medium text-text">
                     {title}{" "}

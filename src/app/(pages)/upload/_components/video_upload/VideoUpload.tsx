@@ -76,7 +76,7 @@ export default function VideoUpload({ file }: { file: FileUploadFile }) {
         >
             <VideoUploadForm>
                 <section className="flex w-full flex-col gap-3">
-                    <div className="flex w-full gap-3">
+                    <div className="flex w-full flex-col gap-3 sm:flex-row">
                         <VideoUploadPreview />
                         <div
                             ref={container}

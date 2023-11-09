@@ -104,14 +104,14 @@ export default function FileUpload() {
                 <input {...getInputProps({ name: "file" })} />
                 <div
                     className={clsx(
-                        "flex h-full w-full  flex-col items-center justify-center gap-1 rounded-[13px] bg-tertiary from-tertiary to-error text-text",
+                        "flex h-full w-full  flex-col items-center justify-center gap-1 rounded-[13px] bg-tertiary from-tertiary to-error p-4 text-text",
                         fileRejections.length > 0 &&
                             !animationPlayed &&
                             "animate-pulse-once"
                     )}
                     onAnimationEnd={() => setAnimationPlayed(true)}
                 >
-                    <div className="flex items-center justify-center gap-1">
+                    <div className="flex flex-col items-center justify-center gap-1 text-center sm:flex-row sm:text-left">
                         <DocumentArrowUpIcon className="h-5 w-5" />
                         {isDragActive
                             ? "Drop the files here ..."
