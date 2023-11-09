@@ -1,5 +1,8 @@
 import prisma from "@/db";
+import { formatName } from "@/format";
+import { extractName, prepareFileName } from "@/tmdb/extractor";
 import { RelativeMaster } from "@/transcode/realativeMaster";
+import { getStoreDirectory } from "@/transcode/store";
 import { Transcoder } from "@/transcode/transcoder";
 import { existsSync } from "fs";
 import { mkdir, rm, writeFile } from "fs/promises";
@@ -112,8 +115,9 @@ async function handleTranscode(
     });
 
     // Write file
-    const fileName = file.name.replaceAll(/\s+/g, "_");
-    const outputPath = path.join(dirPath, video.id);
+    const parsedFileName = path.parse(file.name);
+    const fileName = formatName(parsedFileName.name) + parsedFileName.ext;
+    const outputPath = getStoreDirectory(dirPath, video);
     const filePath = path.join(outputPath, fileName);
     if (!existsSync(outputPath)) await mkdir(outputPath, { recursive: true });
 

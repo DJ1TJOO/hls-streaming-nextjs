@@ -45,6 +45,11 @@ async function insertEpisode(
                 release_date: new Date(episode.air_date).toISOString(),
                 backdrop_path: null,
             },
+            include: {
+                season: true,
+                serie: true,
+                collection: true,
+            },
         });
     } catch (error) {
         return null;
@@ -134,6 +139,11 @@ async function insertMovie(
                 release_date: new Date(movie.release_date).toISOString(),
                 backdrop_path: movie.backdrop_path,
                 tmdb_collection_id: movie.belongs_to_collection?.id,
+            },
+            include: {
+                collection: true,
+                season: true,
+                serie: true,
             },
         });
     } catch (error) {

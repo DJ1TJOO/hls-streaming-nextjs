@@ -12,8 +12,13 @@ export function formatEnumeration(items: string[]) {
     return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
 
-export function formatYear(date: string) {
+export function formatYear(date: string | Date) {
     return new Date(date).toLocaleString(undefined, {
         year: "numeric",
     });
+}
+
+const noSpaceRegex = /[_\s]/gm;
+export function formatName(name: string) {
+    return name.toLowerCase().replace(noSpaceRegex, "-").trim();
 }

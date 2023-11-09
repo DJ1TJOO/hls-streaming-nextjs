@@ -8,6 +8,7 @@
         "start": "next start",
         "lint": "next lint",
         "prismaMigrateLocal": "dotenv -e .env.local -- npx prisma migrate dev",
+        "prismaGenerateLocal": "dotenv -e .env.local -- npx prisma generate",
         "prismaMigrateLocalNoSeed": "dotenv -e .env.local -- npx prisma migrate dev --skip-seed",
         "prismaGenerateProduction": "dotenv -e .env.production -- npx prisma generate",
         "prismaDeployProduction": "dotenv -e .env.production -- npx prisma migrate deploy"
