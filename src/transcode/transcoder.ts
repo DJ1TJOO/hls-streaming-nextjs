@@ -51,6 +51,7 @@ export class Transcoder {
         }));
 
         return new Promise<void>((res, rej) => {
+            // TODO: set ffmpeg and ffprobe path from env
             const command = ffmpeg(this.inputFile)
                 // .on("start", function (commandLine) {
                 //     console.log("Spawned Ffmpeg with command: " + commandLine);
