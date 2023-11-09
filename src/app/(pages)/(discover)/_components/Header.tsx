@@ -1,11 +1,9 @@
-"use client";
-
 import React, { useContext } from "react";
 
-import { TmdbConfigurationContext } from "@/app/_components/providers/TmdbConfigurationProvider";
+import { getTmdbConfiguration } from "@/app/utils/tmdbConfiguration";
 
-export default function Header() {
-    const configuration = useContext(TmdbConfigurationContext);
+export default async function Header() {
+    const configuration = await getTmdbConfiguration();
 
     return <div>Header</div>;
 }
