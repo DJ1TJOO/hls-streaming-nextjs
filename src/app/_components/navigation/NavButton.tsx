@@ -5,7 +5,7 @@ import React, { PropsWithChildren } from "react";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
-import { CanLeaveLink } from "../CanLeaveProvider";
+import { CanLeaveLink } from "../providers/CanLeaveProvider";
 
 export default function NavButton({
     path,
