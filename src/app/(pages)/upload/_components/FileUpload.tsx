@@ -11,8 +11,8 @@ import {
     useDropzone,
 } from "react-dropzone";
 
+import VideoUploadRejections from "../../../upload/_components/video_upload/VideoUploadRejections";
 import { FilesContext } from "./FilesProvider";
-import VideoUploadRejections from "./video_upload/VideoUploadRejections";
 
 async function getDuration(file: File) {
     const url = URL.createObjectURL(file);

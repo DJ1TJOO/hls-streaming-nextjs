@@ -13,9 +13,9 @@ export default function VideoDescription() {
                 <div className="flex w-full flex-col gap-1">
                     <div className="h-7 w-1/3 animate-pulse rounded-md bg-tertiary" />
                     <div className="flex w-full flex-col gap-1">
-                        <div className="animation-delay-150 h-5 w-full animate-pulse rounded bg-tertiary" />
-                        <div className="animation-delay-300 h-5 w-full animate-pulse rounded bg-tertiary" />
-                        <div className="animation-delay-500 h-5 w-4/5 animate-pulse rounded bg-tertiary" />
+                        <div className="h-5 w-full animate-pulse rounded bg-tertiary animation-delay-150" />
+                        <div className="h-5 w-full animate-pulse rounded bg-tertiary animation-delay-300" />
+                        <div className="h-5 w-4/5 animate-pulse rounded bg-tertiary animation-delay-500" />
                     </div>
                 </div>
             </div>
