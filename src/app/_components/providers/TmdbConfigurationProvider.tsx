@@ -5,7 +5,7 @@ import React, { PropsWithChildren, createContext } from "react";
 import {
     TmdbConfiguration,
     defaultTmdbConfiguration,
-} from "../../utils/tmdbConfiguration";
+} from "@/app/utils/tmdbConfigurationDefault";
 
 export const TmdbConfigurationContext = createContext<TmdbConfiguration>(
     defaultTmdbConfiguration
