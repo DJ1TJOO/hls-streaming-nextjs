@@ -19,7 +19,10 @@ async function fetchTmdbConfiguration() {
 }
 
 export const getTmdbConfiguration = cache(async () => {
-    let configuration = await fetchTmdbConfiguration();
+    let configuration = null;
+    try {
+        configuration = await fetchTmdbConfiguration();
+    } catch (error) {}
 
     if (configuration === null) configuration = defaultTmdbConfiguration;
     else {
