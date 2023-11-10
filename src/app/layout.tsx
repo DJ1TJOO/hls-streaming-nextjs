@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { headers } from "next/headers";
 
 import CanLeaveProvider from "./_components/CanLeaveProvider";
 import Topbar from "./_components/Topbar";
@@ -19,26 +20,41 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const headersList = headers();
+    const activePath = headersList.get("x-pathname");
+    const showSidebarTopbar = !activePath?.includes("player");
+
     return (
         <html lang="en">
-            <body className={clsx(inter.className, "h-screen")}>
-                <CanLeaveProvider>
-                    <div
-                        className={
-                            "flex h-full gap-4 overflow-visible bg-primary pl-6 pt-6"
-                        }
+            <CanLeaveProvider>
+                {showSidebarTopbar ? (
+                    <body
+                        className={clsx(
+                            inter.className,
+                            "scrollbar-none flex w-full flex-col gap-4 overscroll-y-auto bg-primary px-6 sm:flex-row"
+                        )}
                     >
                         <Sidebar />
-                        <main className="relative flex h-full w-full flex-col gap-4">
+                        <div className="flex w-full flex-col gap-4 sm:w-[calc(100%-14rem-1rem)]">
                             <Topbar />
-                            <div className="absolute top-14 z-10 h-4 min-h-[1rem] w-full bg-gradient-to-b from-primary"></div>
-                            <div className="scrollbar-none -mt-4 flex flex-col gap-6 overflow-y-auto pb-6 pr-6 pt-4 filter">
+                            <main className="flex flex-col gap-6 pb-6">
                                 {children}
-                            </div>
+                            </main>
+                        </div>
+                    </body>
+                ) : (
+                    <body
+                        className={clsx(
+                            inter.className,
+                            "scrollbar-none flex w-full flex-col gap-4 overscroll-y-auto bg-primary px-6 sm:flex-row"
+                        )}
+                    >
+                        <main className="flex flex-col gap-6 pb-6">
+                            {children}
                         </main>
-                    </div>
-                </CanLeaveProvider>
-            </body>
+                    </body>
+                )}
+            </CanLeaveProvider>
         </html>
     );
 }

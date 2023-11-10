@@ -7,9 +7,9 @@ import SearchBar from "./search/SearchBar";
 
 export default function Topbar() {
     return (
-        <header className="flex h-14 min-h-[3.5rem] w-full items-center justify-between pr-6">
-            <div className="flex items-center gap-4">
-                <ChevronLeftIcon className="h-6 w-6 text-text" />
+        <header className="sticky top-0 z-40 -mx-6 flex h-[5rem] shrink-0 items-center justify-between gap-2 bg-primary px-6 pt-4 shadow-primary after:absolute after:-bottom-4 after:left-0 after:h-4 after:w-full after:bg-gradient-to-b after:from-primary sm:-ml-4 sm:pl-4 sm:pt-6">
+            <div className="flex w-full items-center gap-4">
+                <ChevronLeftIcon className="h-6 w-6 shrink-0 text-text" />
                 <SearchBar />
             </div>
             <NotificationMenu
