@@ -174,13 +174,7 @@ export class Transcoder {
                 });
 
             command.run();
-            command.on("error", async () => {
-                // Cleanup
-                await rm(this.outputPath, {
-                    recursive: true,
-                    force: true,
-                });
-
+            command.on("error", async (e) => {
                 rej("aborted");
             });
             this._commands.push(command);

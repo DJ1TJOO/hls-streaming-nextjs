@@ -29,7 +29,13 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
                 setCancelUpload(controller);
 
                 const formData = new FormData();
-                formData.append("file", file);
+
+                formData.append(
+                    "file",
+                    JSON.stringify({
+                        name: file.name,
+                    })
+                );
                 formData.append(
                     "tmdb",
                     JSON.stringify({
@@ -73,7 +79,25 @@ export default function VideoUploadForm({ children }: PropsWithChildren) {
 
                         const command = parts[1];
 
-                        if (
+                        if (command === "upload" && parts.length > 2) {
+                            const token = parts[2];
+
+                            const uploadFormData = new FormData();
+                            uploadFormData.append("file", file);
+                            fetch("/api/upload-file", {
+                                method: "post",
+                                body: uploadFormData,
+                                cache: "no-store",
+                                headers: {
+                                    "x-upload-token": token,
+                                },
+                            }).then((res) => {
+                                if (res.status !== 200)
+                                    throw new Error("failed to upload", {
+                                        cause: res,
+                                    });
+                            });
+                        } else if (
                             command === "progress" &&
                             parts.length > 2 &&
                             isNumeric(parts[2])

@@ -20,9 +20,22 @@ export default async function parse(data: FormData) {
         const file = files[i];
         const tmdb = tmdbs[i];
 
-        // Make sure file is a file and tmdb is not a file
-        if (!(file instanceof File)) return null;
+        // Make sure file is not file and tmdb is not a file
+        if (file instanceof File) return null;
         if (tmdb instanceof File) return null;
+
+        // Make sure file is json data
+        let fileParsed: any;
+        try {
+            fileParsed = JSON.parse(file);
+        } catch (error) {
+            return null;
+        }
+
+        // Make sure it has a name
+        if (typeof fileParsed.name !== "string") {
+            return null;
+        }
 
         // Make sure tmdb is json data
         let tmdbParsed: any;
@@ -50,7 +63,7 @@ export default async function parse(data: FormData) {
         }
 
         entries.push({
-            file,
+            fileName: fileParsed.name as string,
             tmdb: searchResult as ValidatedSearchResult,
         });
     }
