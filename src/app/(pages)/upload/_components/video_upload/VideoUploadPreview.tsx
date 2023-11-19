@@ -2,7 +2,7 @@
 
 import React, { useContext, useRef, useState } from "react";
 
-import { formatTime } from "@/format";
+import { formatTimeOverview } from "@/format";
 import Image from "next/image";
 
 import { VideoContext } from "./VideoProvider";
@@ -70,7 +70,7 @@ export default function VideoUploadPreview() {
             <div className="break-words p-3 text-sm font-bold text-text">
                 {file?.name}{" "}
                 <span className="text-text-dark">
-                    • {formatTime(file?.duration ?? 0)}
+                    • {formatTimeOverview(file?.duration ?? 0)}
                 </span>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 
-import { formatTime, formatYear } from "@/format";
+import { formatTimeOverview, formatYear } from "@/format";
 
 import { VideoContext } from "./VideoProvider";
 
@@ -44,7 +44,7 @@ export default function VideoDescription() {
                         {currentResult.episode.name}{" "}
                         <span className="text-text-dark">
                             •{" "}
-                            {formatTime(
+                            {formatTimeOverview(
                                 (currentResult.episode.runtime || 0) * 60
                             )}
                         </span>

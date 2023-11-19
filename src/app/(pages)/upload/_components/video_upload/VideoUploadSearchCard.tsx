@@ -2,7 +2,7 @@
 
 import React, { useContext } from "react";
 
-import { formatTime, formatYear } from "@/format";
+import { formatTimeOverview, formatYear } from "@/format";
 import { SearchResult } from "@/tmdb/search";
 import clsx from "clsx";
 
@@ -51,7 +51,7 @@ export default function VideoUploadSearchCard({
                     <h2 className="font-medium text-text">
                         S{episode.season_number}E{episode.episode_number} -{" "}
                         {episode.name} •{" "}
-                        {formatTime((episode.runtime || 0) * 60)}
+                        {formatTimeOverview((episode.runtime || 0) * 60)}
                     </h2>
                     <p className="line-clamp-2 text-sm text-text-dark">
                         {episode.overview}
