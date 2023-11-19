@@ -46,12 +46,10 @@ export default function RootLayout({
                     <body
                         className={clsx(
                             inter.className,
-                            "scrollbar-none flex w-full flex-col gap-4 overscroll-y-auto bg-primary px-6 sm:flex-row"
+                            "scrollbar-none w-full overscroll-y-auto bg-primary"
                         )}
                     >
-                        <main className="flex flex-col gap-6 pb-6">
-                            {children}
-                        </main>
+                        <main className="flex flex-col gap-6">{children}</main>
                     </body>
                 )}
             </CanLeaveProvider>
