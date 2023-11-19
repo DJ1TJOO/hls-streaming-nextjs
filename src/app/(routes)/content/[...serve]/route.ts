@@ -35,14 +35,31 @@ export async function GET(
     const serve = params.serve;
 
     // Only allow videos access
-    if (serve.length < 1 || serve[0] !== "videos") {
+    if (serve.length < 1) {
         return NextResponse.json(
             { success: false, error: "not-found" },
             { status: 404 }
         );
     }
 
-    const filePath = path.join(...serve);
+    // Require store path
+    const dirPath = process.env.UPLOAD_URL;
+    if (typeof dirPath === "undefined") {
+        return NextResponse.json(
+            {
+                success: false,
+                error: "internal-server-error",
+            },
+            {
+                status: 500,
+            }
+        );
+    }
+
+    const safeServe = path
+        .normalize(path.join(...serve))
+        .replace(/^(\.\.(\/|\\|$))+/, "");
+    const filePath = path.join(dirPath, safeServe);
     if (!allowedExtenstions.includes(path.parse(filePath).ext)) {
         return NextResponse.json(
             { success: false, error: "forbidden" },
