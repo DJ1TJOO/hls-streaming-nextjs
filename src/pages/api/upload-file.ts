@@ -1,6 +1,6 @@
 import formidable from "formidable";
 import { existsSync } from "fs";
-import { mkdir } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
@@ -49,6 +49,7 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const outputDir = path.parse(filePath).dir;
+    if (!existsSync(outputDir)) await mkdir(outputDir, { recursive: true });
     const fileName = path.parse(filePath).base;
 
     const form = formidable({
@@ -61,6 +62,7 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
     });
     try {
         await form.parse(req);
+        await writeFile(path.join(outputDir, "uploaded"), "1", "utf-8");
     } catch (error) {
         return res.status(500).json({
             success: false,

@@ -1,11 +1,13 @@
 import prisma, { Video } from "@/db";
 
 export async function remove(video: Video) {
-    await prisma.video.delete({
-        where: {
-            id: video.id,
-        },
-    });
+    try {
+        await prisma.video.delete({
+            where: {
+                id: video.id,
+            },
+        });
+    } catch (error) {}
 
     // Delete season and serie/collection if not used by others
     try {
